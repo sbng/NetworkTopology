@@ -32,7 +32,14 @@ graph TD;
     - D3.js
     - Graphviz
     - N2G
-Unstructured: 
+      
+# Unstructured: 
+
 ![Unstructured](https://github.com/sbng/NetworkTopology/blob/main/images/swappy-20250227-223319.png "Unstructured")
-Structured: 
+
+# Structured
+
 ![Structured](https://github.com/sbng/NetworkTopology/blob/main/images/swappy-20250227-223429.png "Structured")
+
+# Generated Topology
+![Automated](https://github.com/sbng/NetworkTopology/blob/main/images/swappy-20250227-225919.png "Generated Topology")
