@@ -29,7 +29,6 @@ def gen_edges(parsed_data, edge_type):
     Generate all edges base upon the TTP template parsed data mac address or CDP
     '''
     edges = []
-    print (edge_type)
     if edge_type == "mac":
         db = gen_device_mac(parsed_data)
         for info in parsed_data['hosts']:

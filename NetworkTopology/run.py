@@ -36,7 +36,6 @@ def main():
     )
 
     args = parser.parse_args()
-    print (args)
     results = parse(args.infile, args.template)
     links = gen_edges(results, args.edge_type)
     nodes = gen_nodes(links)
