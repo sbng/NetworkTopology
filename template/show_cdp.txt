@@ -1,0 +1,16 @@
+<vars>
+hostname='gethostname'
+IfsNormalize = {
+    'Ge':['^GigabitEthernet']
+}
+</vars>
+<group name="hosts">
+{{hostname}}#term len 0
+<group name="cdp*" expand="">
+Device ID: {{ target.id }}
+  IP address: {{ target.top_label }}
+Platform: {{ target.bottom_label | ORPHRASE }},  Capabilities: {{ ignore(ORPHRASE) }}
+Interface: {{ src_label | resuball(IfsNormalize) }},  Port ID (outgoing port): {{ trgt_label | ORPHRASE | resuball(IfsNormalize) }}
+{{ source | set("hostname") }}
+</group>
+</group>

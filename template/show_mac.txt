@@ -1,0 +1,13 @@
+<group name="hosts">
+{{hostname}}#term len 0
+<group name="interface">
+{{interface}} is up, line protocol is {{ ignore(".+") }}
+  Hardware is {{ platform | ORPHRASE }}, address is {{ macaddress | MAC }} (bia {{ ignore }})
+</group>
+<group name="mac_table">
+{{ ignore(" {4,}") }}{{ vlan | DIGIT }}  {{ mac | MAC }}  {{ type }}  {{ ignore("Yes") }}  {{ ignore(DIGIT) }}  {{ port }}
+</group>
+<group name="mac_table">
+{{ ignore(" {1,}") }}{{ vlan | DIGIT }}  {{ mac | MAC }} DYNAMIC {{ port }}
+</group>
+</group>
