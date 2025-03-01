@@ -43,3 +43,14 @@ graph TD;
 
 # Generated Topology
 ![Automated](https://github.com/sbng/NetworkTopology/blob/main/images/swappy-20250227-225919.png "Generated Topology")
+
+# Installation
+
+```bash
+git clone https://github.com/sbng/NetworkTopology.git
+cd NetworkTopology
+python3 -m venv venv
+source venv/bin/activate  
+pip install -r requirements.txt  
+python NetworkTopology/run.py --help  
+```
