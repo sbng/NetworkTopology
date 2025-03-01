@@ -35,11 +35,15 @@ def gen_edges(parsed_data, edge_type):
             for mac in info['mac_table']:
                 neighbor = lookup_mac_address(db, mac['mac'])
                 if neighbor != "Null" :
-                    edges.append((info['hostname'],neighbor))
+                    '''
+                    create a list that comprise of device(hostname), neighbor device and 
+                    the port/interface used to cconnect
+                    '''
+                    edges.append((info['hostname'],neighbor,mac['port']))
     if edge_type == "cdp":
         for info in parsed_data['hosts']:
             for cdp_info in info['cdp']:
-                edges.append((info['hostname'],cdp_info['target']['id'].split('.')[0]))
+                edges.append((info['hostname'],cdp_info['target']['id'].split('.')[0], cdp_info['src_label']))
     return list(set(edges))
 
 def gen_nodes(edges):
@@ -48,9 +52,19 @@ def gen_nodes(edges):
     '''
     hosts = []
     for i in edges:
-        for h in i:
+        for h in i[0:1]:
             hosts.append(h)
     return list(set(hosts))
+
+def remove_interfaces(links):
+    '''
+    links argument comprise of (Node1, Node2, interface), this function remove the last 
+    element and return (Node1,Node2) as the graph would not need the interfaces 
+    '''
+    clean_links = []
+    for i in list(links):        
+        clean_links.append(tuple((i[0],i[1])))
+    return clean_links
 
 def cdp_edges(parsed_data):
     '''
@@ -73,7 +87,7 @@ def drawio_gen_nodes(nodes):
     return drawio_nodes
 
 def drawio_gen_edges(edges):
-    connection = "endArrow=classic;html=1;rounded=0;edgeStyle=orthogonalEdgeStyle;curved=1;"
+    connection = "endArrow=none;html=1;rounded=0;strokeColor=#788AA3;fontColor=#46495D;fillColor=#B2C9AB;"
     drawio_edges = []
     for i in edges:
         edges_attribute = {}
@@ -87,7 +101,7 @@ def d3_graph(nodes, links, outfile):
     g = nx.Graph()
     g.graph['background_color'] = "white"
     g.add_nodes_from(nodes)
-    g.add_edges_from(links)
+    g.add_edges_from(remove_interfaces(links))
     for n in g:
          g.nodes[n]["name"] = f"{n}" 
          g.nodes[n]["hover"] = '<a href="https://www.cisco.com/search?q={n}">Cisco</a>'
@@ -106,7 +120,7 @@ def d3_graph(nodes, links, outfile):
 def drawio_graph(nodes, links, outfile):
    if not outfile == "Null":
        drawio_graph = {'nodes': drawio_gen_nodes(nodes), \
-                       'links': drawio_gen_edges(links)}
+                       'links': drawio_gen_edges(remove_interfaces(links))}
        drawio = drawio_diagram()
        drawio.from_dict(drawio_graph, width=1300, height=1200)
        drawio.layout(algo="kk")
