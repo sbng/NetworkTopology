@@ -54,7 +54,7 @@ def framework_arg(parser):
         "--framework",
         metavar="",
         type=str,
-        help=" Using framework [d3|n2g] (Default: d3)",
+        help=" Using framework [d3|drawio] (Default: d3)",
         default="d3",
     )
 
