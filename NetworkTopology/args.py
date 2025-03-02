@@ -58,6 +58,16 @@ def framework_arg(parser):
         default="d3",
     )
 
+def graph_arg(parser):
+    """define arguments to be added"""
+    return parser.add_argument(
+        "--graph",
+        metavar="",
+        type=str,
+        help=" Type of graph Graph, DiGraph or MultiGraph (Default: Graph)",
+        default="Graph",
+    )
+
 def get_args(options):
     """
     Input: keywords boolean of the desire argument
@@ -74,7 +84,7 @@ def main():
     main function define to test the function before integeration
     """
     parser = get_args([show_file_arg, outfile_arg, template_arg, \
-                       edge_type_arg, framework])
+                       edge_type_arg, framework_arg, graph_arg])
     args = parser.parse_args()
     del args
     return 0

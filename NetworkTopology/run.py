@@ -7,6 +7,7 @@ from args import (
     template_arg,
     edge_type_arg,
     framework_arg,
+    graph_arg,
 )
 
 from ttp import ttp
@@ -32,6 +33,7 @@ def main():
             template_arg,
             edge_type_arg,
             framework_arg,
+            graph_arg,
         ]
     )
 
@@ -39,9 +41,9 @@ def main():
     results = parse(args.infile, args.template)
     links = gen_edges(results, args.edge_type)
     nodes = gen_nodes(links)
-    
+
     if args.framework == "d3":
-        d3_graph(nodes, links, args.outfile)
+        d3_graph(nodes, links, args.outfile, args.graph.lower())
     if args.framework == "drawio":
         drawio_graph(nodes, links, args.outfile)
 

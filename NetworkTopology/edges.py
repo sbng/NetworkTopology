@@ -44,7 +44,7 @@ def gen_edges(parsed_data, edge_type):
         for info in parsed_data['hosts']:
             for cdp_info in info['cdp']:
                 edges.append((info['hostname'],cdp_info['target']['id'].split('.')[0], cdp_info['src_label']))
-    return list(set(edges))
+    return edges
 
 def gen_nodes(edges):
     '''
@@ -95,11 +95,17 @@ def drawio_gen_edges(edges):
         drawio_edges.append(edges_attribute) 
     return drawio_edges
 
-def d3_graph(nodes, links, outfile):
+def d3_graph(nodes, links, outfile, graph_type):
     # Setup the graph
     router_img = gv.convert.image_to_data_url("images/router.png", data_format=None, return_data_format=False)
-    g = nx.Graph()
+    if "multi" in graph_type:
+        g = nx.MultiGraph()
+    elif "di" in graph_type:
+        g = nx.DiGraph()
+    else:
+        g = nx.Graph() 
     g.graph['background_color'] = "white"
+    g.graph['arrow_size'] = 2
     g.add_nodes_from(nodes)
     g.add_edges_from(remove_interfaces(links))
     for n in g:
@@ -107,9 +113,11 @@ def d3_graph(nodes, links, outfile):
          g.nodes[n]["hover"] = '<a href="https://www.cisco.com/search?q={n}">Cisco</a>'
          g.nodes[n]["image"] = router_img 
     fig = gv.d3(g, node_label_data_source='name', node_hover_neighborhood=True, \
-        show_edge_label=False, edge_label_data_source='label', \
+        show_edge_label=True, edge_label_data_source='label', \
         node_label_size_factor=0.3, node_drag_fix=True, show_node_image=True, \
-        node_image_size_factor=2.0, edge_curvature=0, graph_height=800, zoom_factor=2,\
+        node_image_size_factor=2.0, edge_curvature=0.01, graph_height=800, zoom_factor=2,\
+        edge_size_factor=0.09, use_edge_size_normalization=True, \
+        edge_size_normalization_min=1, edge_size_normalization_max=10, \
         layout_algorithm_active=True)
     if outfile == "Null":
         fig.display()
