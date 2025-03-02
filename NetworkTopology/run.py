@@ -41,7 +41,6 @@ def main():
     results = parse(args.infile, args.template)
     links = gen_edges(results, args.edge_type)
     nodes = gen_nodes(links)
-
     if args.framework == "d3":
         d3_graph(nodes, links, args.outfile, args.graph.lower())
     if args.framework == "drawio":
