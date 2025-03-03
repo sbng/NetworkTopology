@@ -12,7 +12,7 @@ def gen_device_mac(parsed_data):
     device_mac = {}
     for host in parsed_data["hosts"]:
         for intf in host["interface"]:
-            device_mac[intf["macaddress"]] = host["hostname"]
+            device_mac[intf["macaddress"]] = (host["hostname"], intf["interface"])
     return device_mac
 
 def lookup_mac_address(device_db, mac_address):
@@ -27,6 +27,7 @@ def lookup_mac_address(device_db, mac_address):
 def gen_edges(parsed_data, edge_type):
     '''
     Generate all edges base upon the TTP template parsed data mac address or CDP
+    the edges returns a tuple of source host, target host, source interface, target interface
     '''
     edges = []
     if edge_type == "mac":
@@ -37,13 +38,13 @@ def gen_edges(parsed_data, edge_type):
                 if neighbor != "Null" :
                     '''
                     create a list that comprise of device(hostname), neighbor device and 
-                    the port/interface used to cconnect
+                    the source port/interface used to connect and target port/interface
                     '''
-                    edges.append((info['hostname'],neighbor,mac['port']))
+                    edges.append((info['hostname'], neighbor[0], mac['port'], neighbor[1]))
     if edge_type == "cdp":
         for info in parsed_data['hosts']:
             for cdp_info in info['cdp']:
-                edges.append((info['hostname'],cdp_info['target']['id'].split('.')[0], cdp_info['src_label']))
+                edges.append((info['hostname'],cdp_info['target']['id'].split('.')[0], cdp_info['src_label'], cdp_info['trgt_label']))
     return list(set(edges))
 
 def gen_nodes(edges):
@@ -78,7 +79,7 @@ def cdp_edges(parsed_data):
     return list(set(edges))
 
 def drawio_gen_nodes(nodes):
-    router = "image;html=1;image=img/lib/clip_art/networking/Router_Icon_128x128.png"
+    router = "shape=mxgraph.cisco.routers.router;html=1;pointerEvents=1;dashed=0;fillColor=#036897;strokeColor=#ffffff;strokeWidth=2;verticalLabelPosition=bottom;verticalAlign=top;align=center;outlineConnect=0;"
     drawio_nodes = []
     for i in nodes:
         nodes_attribute = {}
@@ -88,10 +89,11 @@ def drawio_gen_nodes(nodes):
 
 def drawio_gen_edges(edges):
     connection = "endArrow=none;html=1;rounded=0;strokeColor=#788AA3;fontColor=#46495D;fillColor=#B2C9AB;"
+    #connection = "rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.25;entryDx=0;entryDy=0;edgeStyle=orthogonalEdgeStyle;curved=1;"
     drawio_edges = []
     for i in edges:
         edges_attribute = {}
-        edges_attribute = {'source': i[0], 'label': '', 'target': i[1], 'style': connection}
+        edges_attribute = {'source': i[0], 'target': i[1], 'style': connection, 'src_label': i[2] , 'trgt_label': i[3]}
         drawio_edges.append(edges_attribute) 
     return drawio_edges
 
@@ -128,8 +130,8 @@ def d3_graph(nodes, links, outfile, graph_type):
 def drawio_graph(nodes, links, outfile):
    if not outfile == "Null":
        drawio_graph = {'nodes': drawio_gen_nodes(nodes), \
-                       'links': drawio_gen_edges(remove_interfaces(links))}
-       drawio = drawio_diagram()
+                       'links': drawio_gen_edges(links)}
+       drawio = drawio_diagram(link_duplicates='update')
        drawio.from_dict(drawio_graph, width=1300, height=1200)
        drawio.layout(algo="kk")
        drawio.dump_file(filename=outfile)

@@ -7,7 +7,7 @@ IfsNormalize = {
 <group name="hosts">
 {{hostname}}#term len 0
 <group name="interface">
-{{interface}} is up, line protocol is {{ ignore(".+") }}
+{{ interface }} is up, line protocol is {{ state }} (connected)
   Hardware is {{ platform | ORPHRASE }}, address is {{ macaddress | MAC }} (bia {{ ignore }})
 </group>
 <group name="cdp*" expand="">
