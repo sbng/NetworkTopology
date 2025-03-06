@@ -8,6 +8,7 @@ from args import (
     edge_type_arg,
     framework_arg,
     graph_arg,
+    restore_arg,
 )
 
 from ttp import ttp
@@ -34,6 +35,7 @@ def main():
             edge_type_arg,
             framework_arg,
             graph_arg,
+            restore_arg,
         ]
     )
 
