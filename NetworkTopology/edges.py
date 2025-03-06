@@ -106,7 +106,10 @@ def d3_graph(nodes, links, outfile, graph_type):
         g = nx.DiGraph()
     else:
         g = nx.Graph() 
-    g.graph['background_color'] = "white"
+    g.graph['background_color'] = "black"
+    g.graph['edge_color'] = "white"
+    g.graph['node_label_color'] = "white"
+    g.graph['opacity'] = 100
     g.graph['arrow_size'] = 2
     g.add_nodes_from(nodes)
     g.add_edges_from(remove_interfaces(links))
