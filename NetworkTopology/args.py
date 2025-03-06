@@ -68,6 +68,16 @@ def graph_arg(parser):
         default="Graph",
     )
 
+def restore_arg(parser):
+    """define arguments to be added"""
+    return parser.add_argument(
+        "--restore",
+        metavar="",
+        type=str,
+        help=" Restore the previous position of devices on the topology base upon saved svg provided (path of svg file)",
+        default="Null",
+    )
+
 def get_args(options):
     """
     Input: keywords boolean of the desire argument
@@ -84,7 +94,7 @@ def main():
     main function define to test the function before integeration
     """
     parser = get_args([show_file_arg, outfile_arg, template_arg, \
-                       edge_type_arg, framework_arg, graph_arg])
+                       edge_type_arg, framework_arg, graph_arg, restore_arg])
     args = parser.parse_args()
     del args
     return 0
