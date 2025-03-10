@@ -45,8 +45,8 @@ def main():
     nodes = gen_nodes(links)
     if args.framework == "d3":
         d3_graph(nodes, links, args.outfile, args.graph.lower(), args.restore)
-#    if args.framework == "drawio":
-#        drawio_graph(nodes, links, args.outfile)
+    if args.framework == "drawio":
+        drawio_graph(nodes, links, args.outfile)
 
 if __name__ == "__main__":
     main()
