@@ -1,5 +1,8 @@
+import os.path
 import gravis as gv
 import networkx as nx
+import xml.etree.ElementTree as ET
+
 from N2G import drawio_diagram
 
 from ttp import ttp
@@ -97,7 +100,7 @@ def drawio_gen_edges(edges):
         drawio_edges.append(edges_attribute) 
     return drawio_edges
 
-def d3_graph(nodes, links, outfile, graph_type):
+def d3_graph(nodes, links, outfile, graph_type, restore):
     # Setup the graph
     router_img = gv.convert.image_to_data_url("images/router.svg", data_format=None, return_data_format=False)
     if "multi" in graph_type:
@@ -117,6 +120,14 @@ def d3_graph(nodes, links, outfile, graph_type):
          g.nodes[n]["name"] = f"{n}" 
          g.nodes[n]["hover"] = '<a href="https://www.cisco.com/search?q={n}">Cisco</a>'
          g.nodes[n]["image"] = router_img 
+    '''
+    if there is a need to restore the position of a node with reference to the svg file provided
+    '''
+    if (restore != "Null") and (os.path.isfile(restore)):
+        all_positions = find_all_label_positions(restore)
+        for label, position in all_positions.items():
+            g.nodes[label]['x'],g.nodes[label]['y']= position[0], position[1]
+
     fig = gv.d3(g, node_label_data_source='name', node_hover_neighborhood=True, \
         show_edge_label=True, edge_label_data_source='label', \
         node_label_size_factor=0.3, node_drag_fix=True, show_node_image=True, \
@@ -124,6 +135,7 @@ def d3_graph(nodes, links, outfile, graph_type):
         edge_size_factor=0.2, use_edge_size_normalization=True, \
         edge_size_normalization_min=1, edge_size_normalization_max=10, \
         layout_algorithm_active=True)
+
     if outfile == "Null":
         fig.display()
     else:
@@ -139,3 +151,19 @@ def drawio_graph(nodes, links, outfile):
        drawio.layout(algo="kk")
        drawio.dump_file(filename=outfile)
    return
+
+def find_all_label_positions(svg_file):
+    tree = ET.parse(svg_file)
+    root = tree.getroot()
+    namespace = {"svg": "http://www.w3.org/2000/svg"}
+
+    label_positions = {}  # Dictionary to store positions
+
+    for text_elem in root.findall(".//svg:text", namespace):
+        label = text_elem.text.strip() if text_elem.text else None
+        x = text_elem.get("x")
+        y = text_elem.get("y")
+
+        if label and x is not None and y is not None:
+            label_positions[label] = (float(x), float(y))
+    return label_positions
